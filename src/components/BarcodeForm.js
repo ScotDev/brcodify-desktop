@@ -1,15 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { shell, ipcRenderer, nativeImage } from 'electron';
+import { shell, ipcRenderer, nativeImage, dialog, remote } from 'electron';
 
 const path = require('path');
 const os = require("os");
 const fs = require('fs');
 
-// This barcode library is a react wrapper for the JSbarcode library
-import Barcode from "react-hooks-barcode";
 import JsBarcode from 'jsbarcode'
-import FileSaver from 'file-saver'
+
 
 import { Text, Stack, Button, ButtonGroup, Box, Input, Select, Flex, PseudoBox } from '@chakra-ui/core'
 
@@ -37,13 +35,9 @@ export default function FormComponentHooks() {
     // const MSI = 'MSI1010'
 
     const outputPath = path.join(os.homedir(), "/downloads/Barcodes")
+    const regexPattern = new RegExp("[^0-9]", "g");
 
-    const config = {
-        fontOptions: "bold",
-        font: "monospace",
-        width: 1,
-        format: format
-    };
+
 
     const downloadBarcode = () => {
 
@@ -52,36 +46,39 @@ export default function FormComponentHooks() {
 
         const nativeImg = nativeImage.createFromDataURL(img).toPNG()
 
-        console.log(nativeImg)
-
-
-
-
         if (fs.existsSync(outputPath)) {
-            fs.writeFileSync(`${outputPath}/${barcodeValue}.png`, nativeImg)
-            shell.openPath(outputPath)
+
+            remote.dialog.showSaveDialog(null, { title: barcodeValue, defaultPath: outputPath }).then(nativeImg => {
+                fs.writeFileSync(`${outputPath}/${barcodeValue}.png`, nativeImg)
+                shell.openPath(outputPath)
+            }).catch(err => {
+                console.log(err)
+            })
+
         } else {
             fs.mkdirSync(outputPath)
             fs.writeFileSync(`${outputPath}/${barcodeValue}.png`, nativeImg)
             shell.openPath(outputPath)
         }
+        // Add error catching to this function
 
 
     }
 
     const printBarcode = () => {
-        // const canvas = document.getElementById('barcode');
-        // const img = canvas.toDataURL('image/png');
-        // const url = "about:blank";
-        // const newWindow = window.open(url, "_new");
-        // newWindow.document.open();
-        // newWindow.document.write(`<img src='${img}' onload='window.print()' />`)
-        alert(barcodeValue);
+        const canvas = document.getElementById('barcode');
+        const img = canvas.toDataURL('image/png');
+
+        const nativeImg = nativeImage.createFromDataURL(img).toPNG()
+
+
+
+        console.log(barcodeValue);
     }
 
 
     const handleSubmit = e => {
-        const regexPattern = new RegExp("[^0-9]", "g");
+
         e.preventDefault(e);
 
         if (inputValue.length > 50) {
@@ -102,7 +99,7 @@ export default function FormComponentHooks() {
         } else {
             setbarcodeValue(inputValue)
             setMessage(null)
-            document.title = `BRCODIFY | ${inputValue}`
+            // document.title = `BRCODIFY | ${inputValue}`
         }
 
     }
@@ -122,16 +119,27 @@ export default function FormComponentHooks() {
                 console.log("Value cannot start with blank space")
                 setMessage("Value cannot start with a blank space");
                 setbarcodeValue(defaultValue)
-            } else {
+            } else if (format === ITF14 & inputValue.length !== 13) {
+                setMessage("An ITF-14 code must be exactly 13 digits")
+                setbarcodeValue(defaultValue)
+            } else if (format === ITF14 & inputValue.length !== 13) {
+                setMessage("'An ITF-14 code must be exactly 13 digits'")
+                setbarcodeValue(defaultValue)
+            } else if (format === ITF14 & regexPattern.test(inputValue)) {
+                setMessage("An ITF-14 code must only contain digits")
+                setbarcodeValue(defaultValue)
+            }
+            else {
                 setMessage(null)
             }
         },
         [inputValue]
     );
 
+
     useEffect(
         () => {
-            JsBarcode("#barcode", barcodeValue, { config })
+            JsBarcode("#barcode", barcodeValue, { format: format, fontOptions: "bold", font: "monospace" })
         }, [barcodeValue]
     )
 
@@ -186,8 +194,6 @@ export default function FormComponentHooks() {
 
 
             <PseudoBox border="1px" borderRadius="md" borderColor="gray.200" mb={10} overflow="hidden" p={2}>
-                {/* <Barcode value={barcodeValue} format={format} {...config} />
-                 */}
                 <canvas id="barcode"></canvas>
             </PseudoBox>
 
