@@ -1,6 +1,6 @@
 const path = require('path')
 const url = require('url')
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, globalShortcut } = require('electron')
 
 let mainWindow
 
@@ -15,8 +15,10 @@ if (
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
-		width: 1100,
-		height: 800,
+		width: 700,
+		height: 900,
+		// fullscreenable: false,
+		// resizable: false,
 		show: false,
 		icon: `${__dirname}/assets/icon.png`,
 		webPreferences: {
@@ -64,7 +66,12 @@ function createMainWindow() {
 	mainWindow.on('closed', () => (mainWindow = null))
 }
 
-app.on('ready', createMainWindow)
+app.on('ready', () => {
+	createMainWindow()
+	globalShortcut.register("Ctrl+R", () => mainWindow.reload())
+	globalShortcut.register("Ctrl+I", () => mainWindow.toggleDevTools())
+}
+);
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {

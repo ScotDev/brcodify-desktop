@@ -1,8 +1,8 @@
 {
-  "name": "simple-electron-react",
-  "productName": "React Electron App",
+  "name": "brcodify-desktop",
+  "productName": "BRCODIFY",
   "version": "1.0.0",
-  "description": "Simple boilerplate for building Electron apps with React",
+  "description": "A simple barcode generator",
   "license": "MIT",
   "engines": {
     "node": ">=9.0.0",
@@ -21,8 +21,13 @@
     "postpackage": "electron-packager ./ --out=./release-builds"
   },
   "dependencies": {
+    "@chakra-ui/core": "^0.8.0",
+    "@emotion/core": "^10.0.35",
+    "@emotion/styled": "^10.0.27",
+    "emotion-theming": "^10.0.27",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "react-hooks-barcode": "^1.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
