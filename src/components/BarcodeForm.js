@@ -1,10 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
+import { shell, ipcRenderer, nativeImage } from 'electron';
+
+const path = require('path');
+const os = require("os");
+const fs = require('fs');
 
 // This barcode library is a react wrapper for the JSbarcode library
 import Barcode from "react-hooks-barcode";
+import JsBarcode from 'jsbarcode'
+import FileSaver from 'file-saver'
 
 import { Text, Stack, Button, ButtonGroup, Box, Input, Select, Flex, PseudoBox } from '@chakra-ui/core'
+
 
 export default function FormComponentHooks() {
 
@@ -28,17 +36,37 @@ export default function FormComponentHooks() {
     // const MSI = 'MSI11'
     // const MSI = 'MSI1010'
 
+    const outputPath = path.join(os.homedir(), "/downloads/Barcodes")
+
     const config = {
         fontOptions: "bold",
         font: "monospace",
-        width: 1
+        width: 1,
+        format: format
     };
 
     const downloadBarcode = () => {
-        // const generatedSvg = window.getElementById('barcode');
-        // const img = generatedSvg.toDataURL('image/png');
-        // FileSaver.saveAs(img, barcodeValue, { type: "image/png" })
-        alert("download")
+
+        const canvas = document.getElementById('barcode');
+        const img = canvas.toDataURL('image/png');
+
+        const nativeImg = nativeImage.createFromDataURL(img).toPNG()
+
+        console.log(nativeImg)
+
+
+
+
+        if (fs.existsSync(outputPath)) {
+            fs.writeFileSync(`${outputPath}/${barcodeValue}.png`, nativeImg)
+            shell.openPath(outputPath)
+        } else {
+            fs.mkdirSync(outputPath)
+            fs.writeFileSync(`${outputPath}/${barcodeValue}.png`, nativeImg)
+            shell.openPath(outputPath)
+        }
+
+
     }
 
     const printBarcode = () => {
@@ -79,7 +107,7 @@ export default function FormComponentHooks() {
 
     }
 
-
+    // Handle input change
     useEffect(
         () => {
             if (!inputValue) {
@@ -100,6 +128,12 @@ export default function FormComponentHooks() {
         },
         [inputValue]
     );
+
+    useEffect(
+        () => {
+            JsBarcode("#barcode", barcodeValue, { config })
+        }, [barcodeValue]
+    )
 
 
     return (
@@ -152,7 +186,9 @@ export default function FormComponentHooks() {
 
 
             <PseudoBox border="1px" borderRadius="md" borderColor="gray.200" mb={10} overflow="hidden" p={2}>
-                <Barcode value={barcodeValue} format={format} {...config} />
+                {/* <Barcode value={barcodeValue} format={format} {...config} />
+                 */}
+                <canvas id="barcode"></canvas>
             </PseudoBox>
 
             <ButtonGroup spacing={4} mb={10}>
@@ -160,7 +196,7 @@ export default function FormComponentHooks() {
                 <Button bg="pink.500" size="lg" color="cyan.50" onClick={() => { downloadBarcode() }}>Download</Button>
             </ButtonGroup>
 
-            {/* <Text color="cyan.100">Path: {path.join(os.homedir(), "barcodes")}</Text> */}
+            <Text color="cyan.100">Current output path: {outputPath}</Text>
         </Box>
     )
 }

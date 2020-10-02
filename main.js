@@ -1,6 +1,8 @@
 const path = require('path')
 const url = require('url')
-const { app, BrowserWindow, globalShortcut } = require('electron')
+const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron')
+
+const JsBarcode = require('jsbarcode')
 
 let mainWindow
 

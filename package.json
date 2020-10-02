@@ -25,9 +25,9 @@
     "@emotion/core": "^10.0.35",
     "@emotion/styled": "^10.0.27",
     "emotion-theming": "^10.0.27",
+    "jsbarcode": "^3.11.3",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-hooks-barcode": "^1.0.4"
+    "react-dom": "^16.13.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
