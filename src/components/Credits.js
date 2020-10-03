@@ -8,8 +8,8 @@ export default function Credits() {
             <Text fontSize="md" color="cyan.50" >
                 <Link href="https://github.com/ScotDev" isExternal>
                     Created by ScotDev </Link>
-                 - powered by the <Link href="https://github.com/phaniteja1/react-hooks-barcode" isExternal
-                >react-hooks-barcode library</Link>
+                 - powered by the <Link href="https://github.com/lindell/JsBarcode" isExternal
+                >JsBarcode library from Johan Lindell</Link>
             </Text>
         </Box>
     )

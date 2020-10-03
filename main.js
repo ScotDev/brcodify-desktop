@@ -17,14 +17,16 @@ if (
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
-		width: 700,
-		height: 900,
+		width: 750,
+		height: 1000,
 		// fullscreenable: false,
 		// resizable: false,
 		show: false,
 		icon: `${__dirname}/assets/icon.png`,
 		webPreferences: {
 			nodeIntegration: true,
+			// Allows chrome's built-in window.open(), needed for print function
+			nativeWindowOpen: true
 		},
 	})
 
@@ -67,6 +69,7 @@ function createMainWindow() {
 
 	mainWindow.on('closed', () => (mainWindow = null))
 }
+
 
 app.on('ready', () => {
 	createMainWindow()

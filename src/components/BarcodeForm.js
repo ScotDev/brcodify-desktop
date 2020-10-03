@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { shell, ipcRenderer, nativeImage, dialog, remote } from 'electron';
-// const {  } = require("electron").remote
+const { BrowserWindow } = require("electron").remote
 
 const path = require('path');
 const os = require("os");
@@ -59,18 +59,16 @@ export default function FormComponentHooks() {
                 }).catch(err => {
                     console.log(err)
                 })
-            // Add dialog box
         })
     }
 
-    const downloadBarcode = () => {
+    const saveBarcode = () => {
 
         const canvas = document.getElementById('barcode');
         const img = canvas.toDataURL('image/png');
         const nativeImg = nativeImage.createFromDataURL(img).toPNG()
         if (fs.existsSync(outputPath)) {
             saveFile(nativeImg)
-
         } else {
             fs.mkdirSync(outputPath)
             saveFile(nativeImg)
@@ -82,12 +80,9 @@ export default function FormComponentHooks() {
     const printBarcode = () => {
         const canvas = document.getElementById('barcode');
         const img = canvas.toDataURL('image/png');
-
-        const nativeImg = nativeImage.createFromDataURL(img).toPNG()
-
-
-
-        console.log(barcodeValue);
+        let modal = window.open('', 'Print barcode')
+        modal.document.write(`<img src="${img}" >`)
+        modal.setTimeout(() => modal.print(), 500)
     }
 
 
@@ -150,7 +145,7 @@ export default function FormComponentHooks() {
         [inputValue]
     );
 
-
+    // Generate barcode
     useEffect(
         () => {
             JsBarcode("#barcode", barcodeValue, { format: format, fontOptions: "bold", font: "monospace" })
@@ -213,7 +208,7 @@ export default function FormComponentHooks() {
 
             <ButtonGroup spacing={4} mb={10}>
                 <Button bg="pink.500" size="lg" color="cyan.50" onClick={() => { printBarcode() }}>Print</Button>
-                <Button bg="pink.500" size="lg" color="cyan.50" onClick={() => { downloadBarcode() }}>Download</Button>
+                <Button bg="pink.500" size="lg" color="cyan.50" onClick={() => { saveBarcode() }}>Save</Button>
             </ButtonGroup>
 
             <Text color="cyan.100">Current output path: {outputPath}</Text>
