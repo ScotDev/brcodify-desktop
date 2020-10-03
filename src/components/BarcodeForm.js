@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { shell, ipcRenderer, nativeImage, dialog, remote } from 'electron';
+// const {  } = require("electron").remote
 
 const path = require('path');
 const os = require("os");
@@ -8,9 +9,7 @@ const fs = require('fs');
 
 import JsBarcode from 'jsbarcode'
 
-
 import { Text, Stack, Button, ButtonGroup, Box, Input, Select, Flex, PseudoBox } from '@chakra-ui/core'
-
 
 export default function FormComponentHooks() {
 
@@ -38,30 +37,45 @@ export default function FormComponentHooks() {
     const regexPattern = new RegExp("[^0-9]", "g");
 
 
+    const saveFile = (fileToSave) => {
+        remote.dialog.showSaveDialog(null, {
+            title: barcodeValue, defaultPath: `${outputPath}/${barcodeValue}.png`, filters: [
+                { name: 'Images', extensions: ['png'] },
+                { name: 'All Files', extensions: ['*'] }
+            ]
+        }).then(res => {
+            if (res.canceled) {
+                console.log("File save canceled")
+            } else {
+                fs.writeFileSync(res.filePath, fileToSave)
+                // shell.openPath(res.filePath)
+            }
+
+        }).catch(err => {
+            console.log(err)
+            dialog.showMessageBox(null, { title: "File not saved", message: "Error saving file, please try again", noLink: true })
+                .then(res => {
+                    console.log(res)
+                }).catch(err => {
+                    console.log(err)
+                })
+            // Add dialog box
+        })
+    }
 
     const downloadBarcode = () => {
 
         const canvas = document.getElementById('barcode');
         const img = canvas.toDataURL('image/png');
-
         const nativeImg = nativeImage.createFromDataURL(img).toPNG()
-
         if (fs.existsSync(outputPath)) {
-
-            remote.dialog.showSaveDialog(null, { title: barcodeValue, defaultPath: outputPath }).then(nativeImg => {
-                fs.writeFileSync(`${outputPath}/${barcodeValue}.png`, nativeImg)
-                shell.openPath(outputPath)
-            }).catch(err => {
-                console.log(err)
-            })
+            saveFile(nativeImg)
 
         } else {
             fs.mkdirSync(outputPath)
-            fs.writeFileSync(`${outputPath}/${barcodeValue}.png`, nativeImg)
-            shell.openPath(outputPath)
+            saveFile(nativeImg)
         }
         // Add error catching to this function
-
 
     }
 
