@@ -2,7 +2,6 @@ const path = require('path')
 const url = require('url')
 const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron')
 
-const JsBarcode = require('jsbarcode')
 
 let mainWindow
 
@@ -19,10 +18,9 @@ function createMainWindow() {
 	mainWindow = new BrowserWindow({
 		width: 750,
 		height: 1000,
-		// fullscreenable: false,
-		// resizable: false,
+		fullscreenable: false,
 		show: false,
-		icon: `${__dirname}/assets/icon.png`,
+		icon: `${__dirname}/assets/favicon.ico`,
 		webPreferences: {
 			nodeIntegration: true,
 			// Allows chrome's built-in window.open(), needed for print function

@@ -211,7 +211,7 @@ export default function FormComponentHooks() {
                 <Button bg="pink.500" size="lg" color="cyan.50" onClick={() => { saveBarcode() }}>Save</Button>
             </ButtonGroup>
 
-            <Text color="cyan.100">Current output path: {outputPath}</Text>
+            {/* <Text color="cyan.100">Current output path: {outputPath}</Text> */}
         </Box>
     )
 }
